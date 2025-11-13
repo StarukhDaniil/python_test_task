@@ -5,11 +5,11 @@ import simulator
 import handler
 
 if __name__ == "__main__":
-    simulatorProcces = multiprocessing.Process(target=simulator.f)
-    handlerProcess = multiprocessing.Process(target=handler.f)
+    port = 2000
 
+    simulatorProcces = multiprocessing.Process(target=simulator.runSim, args=(port,))
     simulatorProcces.start()
-    handlerProcess.start()
+
+    handler.runHandler(port)
 
     simulatorProcces.join()
-    handlerProcess.join()
