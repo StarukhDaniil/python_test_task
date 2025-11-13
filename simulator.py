@@ -1,27 +1,35 @@
-from pymavlink import mavutil
+import multiprocessing
+from multiprocessing.connection import Connection
 
 class Simulator:
-    def __init__(self, tlog_path, port: int):
-        # port validation
-        if port < 0 or port > 65535:
-            raise ValueError("port has to be between 0 and 65535")
-        
-        # establishing connection with .tlog and handler
-        self.__log_connection = mavutil.mavlink_connection(tlog_path)
-        self.__handler_connection = mavutil.mavlink_connection(f"tcp:127.0.0.1:{port}")
+    def __init__(self, tlog_path, conn: Connection):
+        # open .tlog for reading as binary
+        self.__tlog = open(tlog_path, "rb")
+
+        # saving connection with handler
+        self.__connection = conn
     
     def run(self):
         while True:
-            # getting one of the .tlog messages
-            msg = self.__log_connection.recv_match()
+            # getting 1024 bytes of .tlog
+            raw_chunk = self.__tlog.read(1024)
 
-            if msg is None:
-                break;
-            
-            # sending raw data from msg
-            raw_bytes = msg.get_msgbuf()
-            self.__handler_connection.write(raw_bytes)
+            # if all data from .tlog have been read, the break the loop
+            if len(raw_chunk) == 0:
+                break
+
+            # sending raw data from .tlog
+            self.__connection.send(raw_chunk)
     
-def runSim(tlog_path, port: int):
-    simulator = Simulator(tlog_path, port)
+    def __del__(self):
+        # closing file
+        if not self.__tlog.closed:
+            self.__tlog.close()
+        
+        # closing connection
+        if not self.__connection.closed:
+            self.__connection.close()
+    
+def runSim(tlog_path, conn):
+    simulator = Simulator(tlog_path, conn)
     simulator.run()

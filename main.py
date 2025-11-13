@@ -10,12 +10,12 @@ def main():
     argParser.add_argument("tlog", help="Path to .tlog file")
     args = argParser.parse_args()
 
-    port = 2000
+    reciever_conn, sender_conn = multiprocessing.Pipe()
 
-    simulatorProcces = multiprocessing.Process(target=simulator.runSim, args=(args.tlog, port,))
+    simulatorProcces = multiprocessing.Process(target=simulator.runSim, args=(args.tlog, sender_conn,))
     simulatorProcces.start()
 
-    handler.runHandler(port)
+    handler.runHandler(reciever_conn)
 
     simulatorProcces.join()
 
