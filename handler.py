@@ -11,7 +11,10 @@ class Handler:
     
     def run(self):
         while True:
-            msg = self.__simulator_connection.recv_match(blocking=True)
+            msg = self.__simulator_connection.recv_match(blocking=True, timeout=1)
+            
+            if msg is None:
+                break
             print(msg)
 
 def runHandler(port):
