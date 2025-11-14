@@ -4,16 +4,21 @@ import socket
 
 class Simulator:
     def __init__(self, tlog_path, port: int):
+        # port validation
         if port > 65535 or port < 0:
             raise ValueError("Port has to be between 0 and 65535")
-        
         self.__port = port
 
+        # connection with .tlog to read it
         self.__tlog = mavutil.mavlink_connection(tlog_path)
+
+        # connection with handler to send data
         self.__handler_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
     def run(self):
         self.__handler_connection.connect(('127.0.0.1', self.__port))
+
+        # sending all data from .tlog
         while True:
             msg = self.__tlog.recv_match()
 
