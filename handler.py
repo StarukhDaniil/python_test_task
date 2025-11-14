@@ -84,6 +84,7 @@ class Handler:
         headers = ['timestamp'] + msg.get_fieldnames()
         csv_writer.writerow(headers)
 
+        # saving handlers and writers in dictionaries
         self.__csv_writers[msg_type] = csv_writer
         self.__file_handlers[msg_type] = file
     

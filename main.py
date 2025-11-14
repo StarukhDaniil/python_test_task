@@ -27,5 +27,7 @@ def main():
 
     p.join()
 
+    print("Log are in the csv directory")
+
 if __name__ == "__main__":
     main()
