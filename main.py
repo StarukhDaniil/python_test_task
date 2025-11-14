@@ -4,12 +4,16 @@ import argparse
 import time
 import simulator
 import handler
+import os
 
 def main():
     # parsing path to .tlog
     argParser = argparse.ArgumentParser(description="Sending messages and hadnling them")
     argParser.add_argument("tlog", help="Path to .tlog file")
     args = argParser.parse_args()
+
+    # if user doesn't have csv/ directory, then create it
+    os.makedirs("./csv", exist_ok=True)
 
     reciever_conn, sender_conn = multiprocessing.Pipe()
 
