@@ -48,6 +48,8 @@ class Handler:
                 self.__bytes_received.clear()
                 counter = 0
 
+        # one additional time if counter didn't reach RECV_CYCLES_FOR_LOG
+        self.__write_csv()
         conn.close()
 
     def __write_csv(self):
