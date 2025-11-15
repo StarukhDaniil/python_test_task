@@ -1,7 +1,7 @@
 from pymavlink.dialects.v20 import common as mavlink_dialect
 import csv
 import socket
-import time
+import datetime
 
 # how often to write csv
 RECV_CYCLES_FOR_LOG = 4
@@ -63,7 +63,13 @@ class Handler:
                 if msg_type not in self.__csv_writers:
                     self.__create_csv(msg)
 
-                row = [time.time()] + list(msg.to_dict().values())
+                timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                # removing packet type for writing a row
+                msg_dict = msg.to_dict()
+                msg_dict.pop('mavpackettype')
+
+                row = [timestamp] + list(msg_dict.values())
+
                 
                 writer = self.__csv_writers[msg_type]
                 writer.writerow(row)
